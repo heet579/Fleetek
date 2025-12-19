@@ -1,0 +1,26 @@
+# Node modules
+node_modules/
+dist/
+build/
+
+# Environment variables
+.env
+
+# Logs
+*.log
+error.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local verification files
+verify_backend.js
+verify_login.js
+scripts/seedCars.js
