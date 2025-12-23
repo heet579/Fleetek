@@ -6,8 +6,8 @@ async function testLogin() {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                email: 'admin@fleetek.com',
-                password: 'admin123'
+                username: 'admin@fleetek.com',
+                password: 'password123'
             })
         });
 
