@@ -18,8 +18,16 @@ const seedData = async () => {
         // Get an admin user to associate with the data
         let admin = await User.findOne({ role: 'admin' });
         if (!admin) {
-            console.log('Admin user not found. Please run seedAdmin.js first.');
-            process.exit(1);
+            console.log('Admin user not found. Creating default admin...');
+            admin = new User({
+                username: 'admin',
+                email: 'admin@fleetek.com',
+                password: 'admin123',
+                role: 'admin',
+                permissions: ['all']
+            });
+            await admin.save();
+            console.log('Admin user created successfully');
         }
 
         // Clear existing data (optional, but good for a fresh start in development)
