@@ -1,0 +1,5 @@
+﻿--- Atlas Users ---
+User: admin, Email: admin@fleetek.com, Role: admin
+User: heet, Email: heet579@gmail.com, Role: admin
+User: jaymin, Email: jaymin1234@gmail.com, Role: user
+User: chemdealer, Email: dealer@chemicals.com, Role: dealer
