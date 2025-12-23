@@ -7,9 +7,12 @@ const router = express.Router();
 // Get all cars (public)
 router.get('/', async (req, res) => {
   try {
-    const { search, make, minPrice, maxPrice, year, status = 'available' } = req.query;
+    const { search, make, minPrice, maxPrice, year, status } = req.query;
 
-    let filter = { status };
+    let filter = {};
+    if (status) {
+      filter.status = status;
+    }
 
     // Search filter
     if (search) {

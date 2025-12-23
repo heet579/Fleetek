@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import Navbar from '../components/Navbar';
 import { Circle, ParkingCircle, Car } from 'lucide-react';
 
@@ -15,10 +15,7 @@ const FleetCircle = () => {
 
     const fetchCars = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/cars', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.get('/api/cars');
 
             const cars = res.data;
             const yardCount = cars.filter(c => c.location === 'Yard' && c.status === 'available').length;

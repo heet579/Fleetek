@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 import Navbar from '../components/Navbar';
 import { Save, X, ArrowLeft } from 'lucide-react';
 
@@ -21,7 +21,11 @@ const CarForm = () => {
         fuelType: 'Petrol',
         transmission: 'Automatic',
         description: '',
-        status: 'available'
+        status: 'available',
+        costPrice: '',
+        vendor: '',
+        category: 'Sedan',
+        engineNumber: ''
     });
 
     useEffect(() => {
@@ -32,7 +36,7 @@ const CarForm = () => {
 
     const fetchCar = async () => {
         try {
-            const res = await axios.get(`http://localhost:5000/api/cars/${id}`);
+            const res = await api.get(`/api/cars/${id}`);
             setFormData(res.data);
         } catch (error) {
             console.error('Error fetching car:', error);
@@ -48,19 +52,11 @@ const CarForm = () => {
         e.preventDefault();
         setLoading(true);
 
-        // Auth header is needed. Axios interceptor is better but I'll add it here for simplicity if not globally set.
-        // Actually, I should check if I set up a global axios interceptor. I haven't.
-        // I will use explicit headers.
-        const token = localStorage.getItem('token');
-        const config = {
-            headers: { Authorization: `Bearer ${token}` }
-        };
-
         try {
             if (isEdit) {
-                await axios.put(`http://localhost:5000/api/cars/${id}`, formData, config);
+                await api.put(`/api/cars/${id}`, formData);
             } else {
-                await axios.post('http://localhost:5000/api/cars', formData, config);
+                await api.post('/api/cars', formData);
             }
             navigate('/');
         } catch (error) {
@@ -146,7 +142,38 @@ const CarForm = () => {
                                         <option value="available">Available</option>
                                         <option value="sold">Sold</option>
                                         <option value="reserved">Reserved</option>
+                                        <option value="service">Service</option>
+                                        <option value="rental">Rental</option>
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="border-t border-slate-100 pt-6">
+                            <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">Financial & Tracking</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-slate-700">Cost Price (Acquisition) *</label>
+                                    <input type="number" name="costPrice" required value={formData.costPrice} onChange={handleChange} className="block w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-slate-700">Vendor / Seller</label>
+                                    <input type="text" name="vendor" value={formData.vendor} onChange={handleChange} className="block w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="e.g. John Doe Auction" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-slate-700">Category</label>
+                                    <select name="category" value={formData.category} onChange={handleChange} className="block w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                                        <option value="Sedan">Sedan</option>
+                                        <option value="SUV">SUV</option>
+                                        <option value="Hatchback">Hatchback</option>
+                                        <option value="Truck">Truck</option>
+                                        <option value="Luxury">Luxury</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-slate-700">Engine Number</label>
+                                    <input type="text" name="engineNumber" value={formData.engineNumber} onChange={handleChange} className="block w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" />
                                 </div>
                             </div>
                         </div>

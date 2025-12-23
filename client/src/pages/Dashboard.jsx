@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import Navbar from '../components/Navbar';
 import { Car, Fuel, Circle, Wrench, Users, TrendingUp, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -13,23 +13,36 @@ const Dashboard = () => {
         totalCars: 0
     });
     const [loading, setLoading] = useState(true);
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || '{}'));
     const isAdmin = user.role === 'admin';
 
     useEffect(() => {
-        if (isAdmin) {
-            fetchStats();
-        } else {
-            setLoading(false);
-        }
+        const checkRoleAndStats = async () => {
+            try {
+                const res = await api.get('/api/auth/profile');
+                const updatedUser = res.data;
+                localStorage.setItem('user', JSON.stringify(updatedUser));
+                setUser(updatedUser);
+
+                if (updatedUser.role === 'admin' || updatedUser.role === 'client') {
+                    fetchStats();
+                } else {
+                    setLoading(false);
+                }
+            } catch (error) {
+                console.error('Error syncing dashboard profile:', error);
+                setLoading(false);
+            }
+        };
+
+        checkRoleAndStats();
     }, []);
 
     const fetchStats = async () => {
         try {
-            const token = localStorage.getItem('token');
             const [carsRes, fuelRes] = await Promise.all([
-                axios.get('http://localhost:5000/api/cars', { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get('http://localhost:5000/api/fuel', { headers: { Authorization: `Bearer ${token}` } })
+                api.get('/api/cars'),
+                api.get('/api/fuel')
             ]);
 
             const cars = carsRes.data;
@@ -67,14 +80,24 @@ const Dashboard = () => {
         }
     };
 
-    const modules = [
-        { title: 'Inventory', icon: Car, link: '/inventory', color: 'bg-blue-500', desc: 'Manage your entire fleet' },
-        { title: 'The Garage', icon: Wrench, link: '/garage', color: 'bg-orange-500', desc: 'Service & Maintenance status' },
-        { title: 'Fuel Sheet', icon: Fuel, link: '/fuel-sheet', color: 'bg-green-500', desc: 'Track daily fuel consumption' },
-        { title: 'Fleet Circle', icon: Circle, link: '/fleet-circle', color: 'bg-purple-500', desc: 'Visual location overview' },
+    const allModules = [
+        { title: 'Inventory', icon: Car, link: '/inventory', color: 'bg-blue-500', desc: 'Manage your entire fleet', permission: 'manage_inventory' },
+        { title: 'The Garage', icon: Wrench, link: '/garage', color: 'bg-orange-500', desc: 'Service & Maintenance status', permission: 'manage_garage' },
+        { title: 'Fuel Sheet', icon: Fuel, link: '/fuel-sheet', color: 'bg-green-500', desc: 'Track daily fuel consumption', permission: 'manage_fuel' },
+        { title: 'Fleet Circle', icon: Circle, link: '/fleet-circle', color: 'bg-purple-500', desc: 'Visual location overview', permission: 'view_fleet' },
     ];
 
-    if (isAdmin) {
+    // Filter modules based on user permissions or admin/client status
+    const modules = allModules.filter(mod => {
+        if (isAdmin || user.role === 'client' || user.permissions?.includes('all')) return true;
+        return user.permissions?.includes(mod.permission);
+    });
+
+    if (isAdmin || user.role === 'client' || user.permissions?.includes('view_reports')) {
+        modules.push({ title: 'Reports', icon: TrendingUp, link: '/reports', color: 'bg-teal-600', desc: 'Generate system reports' });
+    }
+
+    if (isAdmin || user.role === 'client') {
         modules.push({ title: 'User Access', icon: Users, link: '/users', color: 'bg-slate-600', desc: 'Manage team permissions' });
     }
 
@@ -88,8 +111,8 @@ const Dashboard = () => {
                     <p className="text-slate-500 mt-2">Here is your daily overview.</p>
                 </div>
 
-                {/* Admin Reports Section */}
-                {isAdmin && (
+                {/* Admin/Client Reports Section */}
+                {(isAdmin || user.role === 'client') && (
                     <div className="mb-12">
                         <h2 className="text-xl font-bold text-slate-800 mb-4 flex items-center">
                             <TrendingUp className="w-5 h-5 mr-2 text-blue-600" />

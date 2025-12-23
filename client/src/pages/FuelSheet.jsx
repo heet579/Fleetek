@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import Navbar from '../components/Navbar';
 import { Fuel, Plus, Calendar } from 'lucide-react';
 
@@ -22,10 +22,7 @@ const FuelSheet = () => {
 
     const fetchLogs = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/fuel', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.get('/api/fuel');
             setLogs(res.data);
         } catch (error) {
             console.error('Error fetching logs:', error);
@@ -37,10 +34,7 @@ const FuelSheet = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const token = localStorage.getItem('token');
-            await axios.post('http://localhost:5000/api/fuel', formData, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.post('/api/fuel', formData);
             setShowModal(false);
             setFormData({
                 rego: '',

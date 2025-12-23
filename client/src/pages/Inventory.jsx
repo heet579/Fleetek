@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api, { API_BASE_URL } from '../utils/api';
 import Navbar from '../components/Navbar';
 import { Search, Filter, Droplet, Hash, Gauge, Edit, Trash2, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -19,7 +19,7 @@ const Inventory = () => {
 
     const fetchCars = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/cars');
+            const res = await api.get('/api/cars');
             setCars(res.data);
         } catch (error) {
             console.error('Error fetching cars:', error);
@@ -87,7 +87,7 @@ const Inventory = () => {
                             >
                                 <div className="h-48 bg-slate-200 relative overflow-hidden">
                                     {car.images && car.images.length > 0 ? (
-                                        <img src={`http://localhost:5000/${car.images[0]}`} alt={`${car.make} ${car.model}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                                        <img src={`${API_BASE_URL}/${car.images[0]}`} alt={`${car.make} ${car.model}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                     ) : (
                                         <div className="flex items-center justify-center h-full text-slate-400 bg-slate-100">
                                             <span className="text-sm">No Image</span>

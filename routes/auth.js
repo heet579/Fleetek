@@ -57,10 +57,7 @@ router.post('/login', async (req, res) => {
 // Register (Client registration - public for now, or Restricted in real app)
 router.post('/register', async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-    // Force role to 'client' for public registration (or 'admin' if you want)
-    // The user requirement implies "Clients" sign up, then they create "Users".
-    const role = 'client';
+    const { username, email, password, role = 'client', permissions = [] } = req.body;
 
     // Check if user exists
     const existingUser = await User.findOne({
@@ -79,7 +76,8 @@ router.post('/register', async (req, res) => {
       username,
       email,
       password,
-      role
+      role,
+      permissions
     });
 
     await user.save();
@@ -169,6 +167,19 @@ router.post('/register-user', auth, async (req, res) => {
       success: false,
       message: 'Server error'
     });
+  }
+});
+
+// Get current user profile
+router.get('/profile', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
   }
 });
 

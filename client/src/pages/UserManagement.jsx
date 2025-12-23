@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import Navbar from '../components/Navbar';
 import { UserPlus, Shield, Check, X, Edit2 } from 'lucide-react';
 
@@ -31,10 +31,7 @@ const UserManagement = () => {
 
     const fetchUsers = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/users', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.get('/api/users');
             setUsers(res.data);
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -78,21 +75,16 @@ const UserManagement = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const token = localStorage.getItem('token');
             if (isEditing) {
                 // Update
                 const updateData = {
                     role: formData.role,
                     permissions: formData.permissions
                 };
-                await axios.put(`http://localhost:5000/api/users/${currentUserId}`, updateData, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                await api.put(`/api/users/${currentUserId}`, updateData);
             } else {
                 // Create
-                await axios.post('http://localhost:5000/api/auth/register-user', formData, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                await api.post('/api/auth/register-user', formData);
             }
             setShowModal(false);
             fetchUsers();

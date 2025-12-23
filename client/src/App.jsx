@@ -8,6 +8,9 @@ import UserManagement from './pages/UserManagement';
 import Garage from './pages/Garage';
 import FleetCircle from './pages/FleetCircle';
 import FuelSheet from './pages/FuelSheet';
+import Reports from './pages/Reports';
+import Chemicals from './pages/Chemicals';
+import Rentals from './pages/Rentals';
 import { useState, useEffect } from 'react';
 
 // Simple Auth Context helper (can be moved to context later)
@@ -79,6 +82,21 @@ function App() {
           <Route path="/fuel-sheet" element={
             <ProtectedRoute allowedRoles={['client', 'admin', 'user']}>
               <FuelSheet />
+            </ProtectedRoute>
+          } />
+          <Route path="/reports" element={
+            <ProtectedRoute allowedRoles={['client', 'admin']}>
+              <Reports />
+            </ProtectedRoute>
+          } />
+          <Route path="/chemicals" element={
+            <ProtectedRoute allowedRoles={['client', 'admin', 'dealer']}>
+              <Chemicals />
+            </ProtectedRoute>
+          } />
+          <Route path="/rentals" element={
+            <ProtectedRoute allowedRoles={['client', 'admin']}>
+              <Rentals />
             </ProtectedRoute>
           } />
 

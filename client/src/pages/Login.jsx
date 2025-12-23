@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Car, Lock, User, ArrowRight } from 'lucide-react';
-import axios from 'axios';
+import api from '../utils/api';
 
 const Login = () => {
     const [formData, setFormData] = useState({ username: '', password: '' });
@@ -21,7 +21,7 @@ const Login = () => {
 
         try {
             // Assuming backend is running on port 5000
-            const res = await axios.post('http://localhost:5000/api/auth/login', formData);
+            const res = await api.post('/api/auth/login', formData);
             const { token, user } = res.data;
 
             localStorage.setItem('token', token);

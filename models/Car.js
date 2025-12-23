@@ -80,7 +80,7 @@ const carSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['available', 'sold', 'reserved', 'service', 'new', 'yard'],
+    enum: ['available', 'sold', 'reserved', 'service', 'new', 'yard', 'rental'],
     default: 'available'
   },
   serviceHistory: [{
@@ -95,6 +95,18 @@ const carSchema = new mongoose.Schema({
   maintenanceNotes: {
     type: String,
     trim: true
+  },
+  engineNumber: {
+    type: String,
+    trim: true
+  },
+  vendor: {
+    type: String,
+    trim: true
+  },
+  category: {
+    type: String,
+    enum: ['Luxury', 'SUV', 'Sedan', 'Hatchback', 'Truck', 'Wagon', 'Coupe', 'Other']
   },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
